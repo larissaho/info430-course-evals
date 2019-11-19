@@ -2,31 +2,39 @@ import pyodbc
 import requests as r
 from bs4 import BeautifulSoup as bs
 
-from lxml import html
-
-# def getHTML(domain):
-#     frontPage = r.get(domain, auth=('USER_NAME', 'PASSWORD'))
-#     return bs(frontPage.content, 'html.parser')
+# Take in the string of a web address, and retun HTML elements of the page
+def getHTML(domain):
+    page = open(domain, "rb").read()
+    return bs(page, 'html.parser')
 
 if __name__ == '__main__':
-    # with open('/Users/larissaho/Desktop/test.html', "rb") as f:
-    #     page = f.read()
 
-    # print(html.fromstring(page))
+    # Call to scrape the given website domain 
+    domain = '/Users/larissaho/Desktop/UW/INFO430/info430-course-evals/db/test_course_page.html'
+    scrape = getHTML(domain)
 
-    a = open('/Users/larissaho/Desktop/UW/INFO430/info430-course-evals/db/test_course_page.html', "rb").read()
+    # Get the section where the HTML content is
+    content = scrape.select('body')
 
-    bs = bs(a, 'html.parser')
+    # Extract basic course information 
+    courseName = content[0].find('h1').text.split()[2] + content[0].find('h1').text.split()[3]
 
-    values = bs.select('body')
+    courseInfo = content[0].find('h2').text.split()
 
-    test = values[0].find('h2').text
+    firstName = courseInfo[0]
+    lastName = courseInfo[1]
+    quarter = courseInfo[3][:2]
+    year = courseInfo[3][:-4]
 
-    table = values[0].find('table')
+    # Extract course statistics 
+    tableInfo = content[0].find('table')
+    surveyStats = tableInfo.find('caption').text.split()
 
-    print(test)
-    print(table)
+    numSurveyed = surveyStats[4]
+    numEnrolled = surveyStats[6]
 
-    # print(values)
+    # Extract course evaluation data 
+    evalInfo = tableInfo.find('tbody')
+    print(evalInfo)
 
     
