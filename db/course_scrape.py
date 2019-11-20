@@ -49,10 +49,14 @@ def insertEvals(evalData, databaseConnection):
 
         params = (firstName, lastName, quarter, academicYear, numSurveyed, numEnrolled, courseAsWholeScore, courseContentScore, proContributionScore, proEffectivenessScore)
 
+        print(i)
+
         cursor.execute(insertData, params)
 
+    # Commits the transaction 
     cursor.commit()
     
+    # Close the connection and cursor 
     cursor.close()
     databaseConnection.close()
     print("Import completed")
@@ -108,8 +112,9 @@ if __name__ == '__main__':
     effectivenessMedian.append(tableRows[3].select('td')[-1].text)
 
     allValues = list(zip(firstName, lastName, quarter, year, numSurveyed, numEnrolled, wholeMedian, contentMedian, contributionMedian, effectivenessMedian))
-    # print(allValues)
 
+    # Connect to the database 
     databaseConnection = connectToDB()
 
+    # Insert data into the SQL table 
     insertEvals(allValues, databaseConnection)
