@@ -2,10 +2,60 @@ import pyodbc
 import requests as r
 from bs4 import BeautifulSoup as bs
 
+# Connect to our database, and return our database connection
+def connectToDB():
+    print("Connecting to database")
+    mydb = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=is-info430.ischool.uw.edu;DATABASE=Group2_Final;UID=INFO430;PWD=wubalubadubdub')
+    print("Doneone connecting")
+    return mydb
+
+
 # Take in the string of a web address, and retun HTML elements of the page
 def getHTML(domain):
     page = open(domain, "rb").read()
     return bs(page, 'html.parser')
+
+# Executes the stored procedure to insert the data from the site
+def insertEvals(evalData, databaseConnection):
+    cursor = databaseConnection.cursor()
+
+    insertData = """
+    SET NOCOUNT ON; 
+    EXECUTE insertEvals
+    @firstName = ?,
+    @lastName = ?,
+    @quarter = ?,
+    @academicYear = ?,
+    @numSurveyed = ?,
+    @numEnrolled = ?,
+    @courseAsWholeScore = ?,
+    @courseContentScore = ?,
+    @proContributionScore = ?,
+    @proEffectivenessScore = ?
+    """ 
+    print("Starting import")
+
+    for i in evalData:
+        firstName = i[0]
+        lastName = i[1]
+        quarter = i[2]
+        academicYear = i[3]
+        numSurveyed =i[4]
+        numEnrolled = i[5]
+        courseAsWholeScore = i[6]
+        courseContentScore = i[7]
+        proContributionScore = i[8]
+        proEffectivenessScore = i[9]
+
+        params = (firstName, lastName, quarter, academicYear, numSurveyed, numEnrolled, courseAsWholeScore, courseContentScore, proContributionScore, proEffectivenessScore)
+
+        cursor.execute(insertData, params)
+
+    cursor.commit()
+    
+    cursor.close()
+    databaseConnection.close()
+    print("Import completed")
 
 if __name__ == '__main__':
 
@@ -58,4 +108,8 @@ if __name__ == '__main__':
     effectivenessMedian.append(tableRows[3].select('td')[-1].text)
 
     allValues = list(zip(firstName, lastName, quarter, year, numSurveyed, numEnrolled, wholeMedian, contentMedian, contributionMedian, effectivenessMedian))
-    print(allValues)
+    # print(allValues)
+
+    databaseConnection = connectToDB()
+
+    insertEvals(allValues, databaseConnection)
