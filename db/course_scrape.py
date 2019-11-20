@@ -21,6 +21,8 @@ if __name__ == '__main__':
     lastName = []
     quarter = []
     year = []
+    numSurveyed = []
+    numEnrolled = []
     wholeMedian = []
     contentMedian = []
     contributionMedian = []
@@ -40,8 +42,8 @@ if __name__ == '__main__':
     tableInfo = content[0].find('table')
     surveyStats = tableInfo.find('caption').text.split()
 
-    numSurveyed = surveyStats[4]
-    numEnrolled = surveyStats[6]
+    numSurveyed.append(surveyStats[4])
+    numEnrolled.append(surveyStats[6])
 
     # Extract course evaluation data 
     evalInfo = tableInfo.find('tbody')
@@ -55,5 +57,5 @@ if __name__ == '__main__':
     contributionMedian.append(tableRows[2].select('td')[-1].text)
     effectivenessMedian.append(tableRows[3].select('td')[-1].text)
 
-    allValues = list(zip(firstName, lastName, quarter, year, wholeMedian, contentMedian, contributionMedian, effectivenessMedian))
+    allValues = list(zip(firstName, lastName, quarter, year, numSurveyed, numEnrolled, wholeMedian, contentMedian, contributionMedian, effectivenessMedian))
     print(allValues)
