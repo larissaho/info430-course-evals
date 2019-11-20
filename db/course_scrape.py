@@ -16,15 +16,25 @@ if __name__ == '__main__':
     # Get the section where the HTML content is
     content = scrape.select('body')
 
+    # Initalize empty lists
+    firstName = []
+    lastName = []
+    quarter = []
+    year = []
+    wholeMedian = []
+    contentMedian = []
+    contributionMedian = []
+    effectivenessMedian = []
+
     # Extract basic course information 
     courseName = content[0].find('h1').text.split()[2] + content[0].find('h1').text.split()[3]
 
     courseInfo = content[0].find('h2').text.split()
 
-    firstName = courseInfo[0]
-    lastName = courseInfo[1]
-    quarter = courseInfo[3][:2]
-    year = courseInfo[3][:-4]
+    firstName.append(courseInfo[0])
+    lastName.append(courseInfo[1])
+    quarter.append(courseInfo[3][:2])
+    year.append(courseInfo[3][-2:])
 
     # Extract course statistics 
     tableInfo = content[0].find('table')
@@ -40,9 +50,10 @@ if __name__ == '__main__':
     # Remove un-needed first row with headers
     tableRows.pop(0)
 
-    wholeMedian = tableRows[0].select('td')[-1].text
-    contentMedian = tableRows[1].select('td')[-1].text
-    contributionMedian = tableRows[2].select('td')[-1].text
-    effectivenessMedian = tableRows[3].select('td')[-1].text
+    wholeMedian.append(tableRows[0].select('td')[-1].text)
+    contentMedian.append(tableRows[1].select('td')[-1].text)
+    contributionMedian.append(tableRows[2].select('td')[-1].text)
+    effectivenessMedian.append(tableRows[3].select('td')[-1].text)
 
-    
+    allValues = list(zip(firstName, lastName, quarter, year, wholeMedian, contentMedian, contributionMedian, effectivenessMedian))
+    print(allValues)
