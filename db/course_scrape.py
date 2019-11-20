@@ -35,6 +35,14 @@ if __name__ == '__main__':
 
     # Extract course evaluation data 
     evalInfo = tableInfo.find('tbody')
-    print(evalInfo)
+    tableRows = evalInfo.select('tr')
+    
+    # Remove un-needed first row with headers
+    tableRows.pop(0)
+
+    wholeMedian = tableRows[0].select('td')[-1].text
+    contentMedian = tableRows[1].select('td')[-1].text
+    contributionMedian = tableRows[2].select('td')[-1].text
+    effectivenessMedian = tableRows[3].select('td')[-1].text
 
     
