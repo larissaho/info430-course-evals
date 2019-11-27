@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ListItem, ListItemText, Container, Card, CardHeader } from '@material-ui/core';
+import { ListItem, ListItemText, Container, Card, CardHeader, CardContent} from '@material-ui/core';
 import Eval from './../eval/Eval';
 
 class EvalsPage extends Component {
@@ -46,8 +46,8 @@ class EvalsPage extends Component {
 
         return (
             <Container>
-                <Card style={{ margin: "2% 0%", backgroundColor: "#303f9f", color: "#fff"}}>
-                    <CardHeader title={"INFO 430"}/>
+                <Card style={{ margin: "2% 0%"}}>
+                    <CardHeader title={"INFO 430"} style={{backgroundColor: "#303f9f", color: "#fff"}}/>
                 </Card>
 
                 <div style={styles}>
