@@ -1,6 +1,8 @@
 import pyodbc
 import requests as r
 from bs4 import BeautifulSoup as bs
+import os 
+import glob
 
 # Connect to our database, and return our database connection
 def connectToDB():
@@ -8,7 +10,6 @@ def connectToDB():
     mydb = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=is-info430.ischool.uw.edu;DATABASE=Group2_Final;UID=INFO430;PWD=wubalubadubdub')
     print("Doneone connecting")
     return mydb
-
 
 # Take in the string of a web address, and retun HTML elements of the page
 def getHTML(domain):
@@ -61,30 +62,14 @@ def insertEvals(evalData, databaseConnection):
     databaseConnection.close()
     print("Import completed")
 
-if __name__ == '__main__':
-
-    # Call to scrape the given website domain 
-    domain = '/Users/larissaho/Desktop/UW/INFO430/info430-course-evals/db/test_course_page.html'
-    scrape = getHTML(domain)
-
+# Pulls out the needed content and appends them into lists
+def scrapeContent(scrape, firstName, lastName, courseName, quarter, year, numSurveyed, numEnrolled,
+    wholeMedian, contentMedian, contributionMedian, effectivenessMedian):
     # Get the section where the HTML content is
     content = scrape.select('body')
 
-    # Initalize empty lists
-    firstName = []
-    lastName = []
-    quarter = []
-    year = []
-    numSurveyed = []
-    numEnrolled = []
-    wholeMedian = []
-    contentMedian = []
-    contributionMedian = []
-    effectivenessMedian = []
-
     # Extract basic course information 
-    courseName = content[0].find('h1').text.split()[2] + content[0].find('h1').text.split()[3]
-
+    courseName.append(content[0].find('h1').text.split()[2] + content[0].find('h1').text.split()[3])
     courseInfo = content[0].find('h2').text.split()
 
     firstName.append(courseInfo[0])
@@ -100,8 +85,7 @@ if __name__ == '__main__':
     numEnrolled.append(surveyStats[6])
 
     # Extract course evaluation data 
-    evalInfo = tableInfo.find('tbody')
-    tableRows = evalInfo.select('tr')
+    tableRows = tableInfo.select('tr')
     
     # Remove un-needed first row with headers
     tableRows.pop(0)
@@ -111,10 +95,33 @@ if __name__ == '__main__':
     contributionMedian.append(tableRows[2].select('td')[-1].text)
     effectivenessMedian.append(tableRows[3].select('td')[-1].text)
 
-    allValues = list(zip(firstName, lastName, quarter, year, numSurveyed, numEnrolled, wholeMedian, contentMedian, contributionMedian, effectivenessMedian))
+if __name__ == '__main__':
+    # Initalize empty lists
+    firstName = []
+    lastName = []
+    courseName = []
+    quarter = []
+    year = []
+    numSurveyed = []
+    numEnrolled = []
+    wholeMedian = []
+    contentMedian = []
+    contributionMedian = []
+    effectivenessMedian = []
+
+    path = '/Users/larissaho/Desktop/UW/INFO430/info430-course-evals/db/CEC'
+
+    for fileName in glob.glob(os.path.join(path, '*.html')):
+        print(fileName)
+        scrape = getHTML(fileName)
+        scrapeContent(scrape, firstName, lastName, courseName, quarter, year, numSurveyed, numEnrolled, wholeMedian, contentMedian, contributionMedian, effectivenessMedian)
+
+    allValues = list(zip(firstName, lastName, courseName, quarter, year, numSurveyed, numEnrolled, wholeMedian, contentMedian, contributionMedian, effectivenessMedian))
+
+    print(allValues)
 
     # Connect to the database 
-    databaseConnection = connectToDB()
+    # databaseConnection = connectToDB()
 
     # Insert data into the SQL table 
-    insertEvals(allValues, databaseConnection)
+    # insertEvals(allValues, databaseConnection)
