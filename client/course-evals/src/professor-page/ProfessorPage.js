@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ListItem, ListItemText, Container, Card, CardHeader, CardContent } from '@material-ui/core';
+import { ListItem, ListItemText, Container, Card, CardHeader, CardContent, CircularProgress } from '@material-ui/core';
 
 class ProfessorPage extends Component {
     constructor(props) {
@@ -45,18 +45,28 @@ class ProfessorPage extends Component {
 
         return (
             <Container>
-                <Card style={{ margin: "2% 0%" }}>
-                    <CardHeader title={this.props.professorName} style={{ backgroundColor: "#303f9f", color: "#fff" }} />
-                </Card>
+                {
+                    Object.keys(this.props.professor).length > 0 ?
+                        <div>
+                            <Card style={{ margin: "2% 0%" }}>
+                                <CardHeader
+                                    title={`${this.props.professor.firstName} ${this.props.professor.lastName}`}
+                                    style={{ backgroundColor: "#303f9f", color: "#fff" }} />
+                            </Card>
 
-                <div style={styles}>
-                    <div style={{ width: "30%" }}>
-                        {this.courseNames(this.state.courseNames)}
-                    </div>
-                    <div>
-                        {this.courseEvals(this.state.courseEvals[this.state.selectedIndex])}
-                    </div>
-                </div>
+                            <div style={styles}>
+                                <div style={{ width: "30%" }}>
+                                    {this.courseNames(this.state.courseNames)}
+                                </div>
+                                <div>
+                                    {this.courseEvals(this.state.courseEvals[this.state.selectedIndex])}
+                                </div>
+                            </div>
+                        </div>
+                        :
+                        <div style={{width: "100%", display: "flex", justifyContent: "center", margin: "25% 0"}}><CircularProgress /></div>
+                }
+
             </Container>
         );
     }

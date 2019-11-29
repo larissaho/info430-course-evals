@@ -1,48 +1,31 @@
 import React, { Component } from 'react';
 import { Container, TextField, Radio, RadioGroup, FormControlLabel, Card, CardContent } from '@material-ui/core';
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Link, useHistory } from "react-router-dom";
 import CourseResultCard from './course-result/CourseResult';
 import EvalsPage from './evals-page/EvalsPage';
 import ProfessorPage from './professor-page/ProfessorPage';
+import ReadService from './services/read';
 
 const Routes = {
   home: "/",
   courseResult: "/course/:course",
   professorResult: "/professor/:professor"
-}
+};
 
-const data = [
-  {
-    professorName: "Greg Hay",
-    reviews: ["a", "b", "c"]
-  },
-  {
-    professorName: "Amy Ko",
-    reviews: ["a", "b", "c"]
-  },
-  {
-    professorName: "David Ewald",
-    reviews: ["a", "b", "c"]
-  }
-];
-
-const professorData = [
-  {
-    courseName: "INFO 200",
-    courseEvals: []
-  },
-  {
-    courseName: "INFO 360",
-    courseEvals: []
-  }
-]
+const data = [];
 
 class App extends Component {
   constructor(props) {
     super(props);
+    this.readService = new ReadService();
+
     this.state = {
       searchTerm: "",
-      searchField: "course"
+      searchField: "course",
+      professors: [],
+      courses: [],
+      selectedProfessor: {},
+      selectedCourse: {}
     };
   }
 
@@ -53,9 +36,26 @@ class App extends Component {
     });
   }
 
-  submitSearchInput = (evt) => {
+  submitSearchInput = async (evt) => {
     evt.preventDefault();
     if (evt.key === 'Enter') {
+      if (this.state.searchField === "course") {
+        let courses = await this.readService.getCoursesWithCourseNumber(this.state.searchTerm);
+        this.setState({
+          courses: courses
+        });
+      } else {
+        let name = this.state.searchTerm.split(" ");
+        let professors = [];
+        if (name.length === 2) {
+          professors = await this.readService.getProfessorsWithFirstAndLastName(name[0], name[1]);
+        } else {
+          professors = await this.readService.getProfessorsWithFirstAndLastName(name[0], "");
+        }
+        this.setState({
+          professors: professors
+        });
+      }
     }
   }
 
@@ -93,35 +93,61 @@ class App extends Component {
         <br /><br /><br />
 
         {
-          this.state.searchField == "course" ? this.courseResults() : this.professorResults()
+          this.state.searchField === "course" ? this.courseResults() : this.professorResults()
         }
       </Container>
     );
   }
 
+  handleCourseSelection = (c) => {
+    this.setState({
+      selectedCourse: c
+    });
+  }
+
+  handleProfessorSelection = (p) => {
+    this.setState({
+      selectedProfessor: p
+    });
+  }
+
   courseResults = () => {
-    return <CourseResultCard />
+    let courses = this.state.courses;
+    return courses.map((c, i) => {
+      return <div onClick={() => this.handleCourseSelection(c)}><CourseResultCard /></div>
+    });
   }
 
   professorResults = () => {
-    let professors = ["Amy Ko", "David Ewald", "Greg Hay"];
+    let professors = this.state.professors;
     let professorCards = []
     professors.forEach((p, i) => {
-      professorCards.push(<Card style={{ width: "30%", margin: "0% 2%", backgroundColor: "#fafafa"}}><CardContent><p>{p}</p></CardContent></Card>);
+      professorCards.push(
+        <Card style={{ width: "30%", margin: "0% 2%", backgroundColor: "#fafafa", cursor: "pointer" }}
+          onClick={() => this.handleProfessorSelection(p)}>
+          <Link
+            to={Routes.professorResult.replace(`:professor`, `${p.profID}`)}
+            style={{ textDecoration: 'none' }}>
+            <CardContent>
+              <p>{`${p.firstName} ${p.lastName}`}</p>
+            </CardContent>
+          </Link>
+        </Card>
+      );
     });
 
-    return <div style={{ display: "flex", flexDirection: "wrap", fontFamily: "Lato", fontSize: "1.1em"}}>{professorCards}</div>;
+    return <div style={{ display: "flex", flexDirection: "wrap", fontFamily: "Lato", fontSize: "1.1em" }}>{professorCards}</div>;
   }
 
   evalsPage = () => {
     return (
-      <EvalsPage courseTitle={"INFO 430"} ratings={data} />
+      <EvalsPage course={this.state.selectedCourse} ratings={[]} />
     );
   }
 
   professorRatings = () => {
     return (
-      <ProfessorPage professorName={"Amy Ko"} ratings={professorData}/>
+      <ProfessorPage professor={this.state.selectedProfessor} ratings={[]}/>
     );
   }
 
