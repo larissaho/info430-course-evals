@@ -9,8 +9,8 @@ class ReadService {
         return results;
     }
 
-    async getCoursesWithCourseNumber(courseNumber) {
-        let response = await fetch(`${this.domain}/search/courses?courseNumber=${courseNumber}`);
+    async getCoursesWithCourseNumber(courseName, courseNumber) {
+        let response = await fetch(`${this.domain}/search/courses?courseNumber=${courseNumber}&courseName=${courseName}`);
         let results = await response.json();
         return results;
     }

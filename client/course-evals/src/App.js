@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Container, TextField, Radio, RadioGroup, FormControlLabel, Card, CardContent } from '@material-ui/core';
-import { BrowserRouter as Router, Switch, Route, Link, useHistory } from "react-router-dom";
+import { Container, TextField, Radio, RadioGroup, FormControlLabel, Card, CardContent, CardHeader, Button, CardActions } from '@material-ui/core';
+import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 import CourseResultCard from './course-result/CourseResult';
 import EvalsPage from './evals-page/EvalsPage';
 import ProfessorPage from './professor-page/ProfessorPage';
@@ -40,7 +40,8 @@ class App extends Component {
     evt.preventDefault();
     if (evt.key === 'Enter') {
       if (this.state.searchField === "course") {
-        let courses = await this.readService.getCoursesWithCourseNumber(this.state.searchTerm);
+        let courseName = this.state.searchTerm.split(" ");
+        let courses = await this.readService.getCoursesWithCourseNumber(courseName[0], courseName[1]);
         this.setState({
           courses: courses
         });
@@ -76,7 +77,7 @@ class App extends Component {
         <TextField
           value={this.state.searchTerm}
           id="standard-search"
-          label="Course Number | Professor"
+          label="Course Number | Professor Name"
           type="search"
           className={""}
           margin="normal"
@@ -102,6 +103,8 @@ class App extends Component {
   handleCourseSelection = (c) => {
     this.setState({
       selectedCourse: c
+    }, () => {
+      console.log(c);
     });
   }
 
@@ -114,7 +117,20 @@ class App extends Component {
   courseResults = () => {
     let courses = this.state.courses;
     return courses.map((c, i) => {
-      return <div onClick={() => this.handleCourseSelection(c)}><CourseResultCard /></div>
+      return (
+        <div key={`c-${i}`} onClick={() => this.handleCourseSelection(c)}>
+          <Link
+            to={Routes.courseResult.replace(`:course`, `${c.courseID}`)}
+            style={{ textDecoration: 'none' }}>
+            <Card style={{ width: "30%", margin: "0% 2%", backgroundColor: "#fafafa", cursor: "pointer" }}>
+              <CardHeader title={`${this.state.searchTerm}`}></CardHeader>
+              <CardActions>
+                <Button variant="contained" color="primary" >See Reviews</Button>
+              </CardActions>
+            </Card>
+          </Link>
+        </div>
+      )
     });
   }
 
@@ -123,7 +139,7 @@ class App extends Component {
     let professorCards = []
     professors.forEach((p, i) => {
       professorCards.push(
-        <Card style={{ width: "30%", margin: "0% 2%", backgroundColor: "#fafafa", cursor: "pointer" }}
+        <Card key={`p-${i}`} style={{ width: "30%", margin: "0% 2%", backgroundColor: "#fafafa", cursor: "pointer" }}
           onClick={() => this.handleProfessorSelection(p)}>
           <Link
             to={Routes.professorResult.replace(`:professor`, `${p.profID}`)}
@@ -141,13 +157,13 @@ class App extends Component {
 
   evalsPage = () => {
     return (
-      <EvalsPage course={this.state.selectedCourse} ratings={[]} />
+      <EvalsPage course={this.state.selectedCourse} />
     );
   }
 
   professorRatings = () => {
     return (
-      <ProfessorPage professor={this.state.selectedProfessor} ratings={[]}/>
+      <ProfessorPage professor={this.state.selectedProfessor} />
     );
   }
 
@@ -158,12 +174,14 @@ class App extends Component {
           <Route exact path={Routes.home}>
             {this.home()}
           </Route>
-          <Route path={Routes.courseResult}>
+          <Route exact path={Routes.courseResult}>
             {this.evalsPage()}
           </Route>
-          <Route path={Routes.professorResult}>
+          <Route exact path={Routes.professorResult}>
             {this.professorRatings()}
           </Route>
+          <Redirect to={Routes.home}
+          />
         </Switch>
       </Router>
     );

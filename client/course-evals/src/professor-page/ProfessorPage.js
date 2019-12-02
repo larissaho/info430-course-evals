@@ -4,11 +4,11 @@ import { ListItem, ListItemText, Container, Card, CardHeader, CardContent, Circu
 class ProfessorPage extends Component {
     constructor(props) {
         super(props);
-        let courseNames = this.props.ratings.map((rating) => { return rating.courseName });
-        let courseEvals = this.props.ratings.map((rating) => { return rating.courseEvals });
+        // let courseNames = this.props.ratings.map((rating) => { return rating.courseName });
+        // let courseEvals = this.props.ratings.map((rating) => { return rating.courseEvals });
         this.state = {
-            courseNames: courseNames,
-            courseEvals: courseEvals,
+            courseNames: [],
+            courseEvals: [],
             selectedIndex: 0
         }
     }
@@ -56,10 +56,10 @@ class ProfessorPage extends Component {
 
                             <div style={styles}>
                                 <div style={{ width: "30%" }}>
-                                    {this.courseNames(this.state.courseNames)}
+                                    {/* {this.courseNames(this.state.courseNames)} */}
                                 </div>
                                 <div>
-                                    {this.courseEvals(this.state.courseEvals[this.state.selectedIndex])}
+                                    {/* {this.courseEvals(this.state.courseEvals[this.state.selectedIndex])} */}
                                 </div>
                             </div>
                         </div>

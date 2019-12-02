@@ -1,20 +1,22 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Card, CardHeader, CardContent, CardActions, Button } from '@material-ui/core';
 
-const CourseResultCard = () => {
-    return (
-        <Card>
-            <CardHeader title={"INFO 400"}></CardHeader>
-            <CardContent>
-                <p>
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                </p>
-            </CardContent>
-            <CardActions>
-                <Button variant="contained" color="primary" >See Reviews</Button>
-            </CardActions>
-        </Card>
-    );
+
+class CourseResultCard extends Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return (
+            <Card>
+                <CardHeader title={`${this.props.course.courseName} ${this.props.course.courseNumber}`}></CardHeader>
+                <CardActions>
+                    <Button variant="contained" color="primary" >See Reviews</Button>
+                </CardActions>
+            </Card>
+        );
+    }
 }
 
 export default CourseResultCard;
