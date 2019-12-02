@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { ListItem, ListItemText, Container, Card, CardHeader, CardContent, CircularProgress } from '@material-ui/core';
+import { ListItem, ListItemText, Container, Card, CardHeader, CardContent, CircularProgress, Fab } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 import ReadService from './../services/read';
 
 class ProfessorPage extends Component {
     constructor(props) {
         super(props);
         this.readService = new ReadService();
-        this.displaySpinner = true;
 
         this.state = {
             courses: [],
-            courseEvals: [],
-            selectedIndex: 0
+            reviews: [],
+            selectedIndex: 0,
+            displaySpinner: true
         }
     }
 
@@ -23,16 +24,18 @@ class ProfessorPage extends Component {
         if (!this.readService) {
             this.readService = new ReadService();
         }
-        let results = await this.readService.getRatingsForCourse(professorID);
+        let results = await this.readService.getRatingsForProfessor(professorID);
 
-        let courses = results.map((rating) => { return rating.courseName });
-        let courseEvals = results.map((rating) => { return rating.courseEvals });
+       
+        let professorName = results.length > 0 ? `${results[0].firstName} ${results[0].lastName}` : "";
+        let courses = results.map((rating) => { return `${rating.courseName} ${rating.courseNumber}` });
+        let reviews = results.map((rating) => { return rating.reviews });
 
         this.setState({
+            professorName: professorName,
             courses: courses,
-            courseEvals: courseEvals
-        }, () => {
-            this.displaySpinner = false;
+            reviews: reviews,
+            displaySpinner: false
         });
     }
 
@@ -61,6 +64,8 @@ class ProfessorPage extends Component {
     selectCourse = (index) => {
         this.setState({
             selectedIndex: index
+        }, () => {
+            console.log(this.state.selectedIndex)
         });
     }
 
@@ -73,7 +78,9 @@ class ProfessorPage extends Component {
         return (
             <Container>
                 {
-                   this.displaySpinner ?
+                    this.state.displaySpinner ?
+                        <div style={{ width: "100%", display: "flex", justifyContent: "center", margin: "25% 0" }}><CircularProgress /></div>
+                        :
                         <div>
                             <Card style={{ margin: "2% 0%" }}>
                                 <CardHeader
@@ -86,12 +93,18 @@ class ProfessorPage extends Component {
                                     {this.courseNames(this.state.courses)}
                                 </div>
                                 <div>
-                                    {this.courseEvals(this.state.courseEvals[this.state.selectedIndex])}
+                                    {this.courseEvals(this.state.reviews[this.state.selectedIndex])}
                                 </div>
                             </div>
+
+                            <Fab color={"secondary"}>
+                                <AddIcon />
+                            </Fab>
+
+                            {/* <Fab color={"primary"} aria-label={"add"}>
+                                
+                            </Fab> */}
                         </div>
-                        :
-                        <div style={{ width: "100%", display: "flex", justifyContent: "center", margin: "25% 0" }}><CircularProgress /></div>
                 }
 
             </Container>
@@ -100,3 +113,5 @@ class ProfessorPage extends Component {
 }
 
 export default withRouter(ProfessorPage);
+
+

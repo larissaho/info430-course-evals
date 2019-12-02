@@ -8,12 +8,12 @@ class EvalsPage extends Component {
     constructor(props) {
         super(props);
         this.readService = new ReadService();
-        this.displaySpinner = true;
 
         this.state = {
             selectedIndex: 0,
             professors: [],
-            reviews: []
+            reviews: [],
+            displaySpinner: true
         }
     }
 
@@ -25,13 +25,16 @@ class EvalsPage extends Component {
             this.readService = new ReadService();
         }
         let results = await this.readService.getRatingsForCourse(courseID);
-        let professors = results.map((rating) => { return rating.professorName });
+
+        let professors = results.map((rating) => { return `${rating.firstName} ${rating.lastName}` });
         let reviews = results.map((rating) => { return rating.reviews });
+        let courseName = results.length > 0 ? `${results[0].courseName} ${results[0].courseNumber}` : "";
+
         this.setState({
+            courseName: courseName,
             professors: professors,
-            reviews: reviews
-        }, () => {
-            this.displaySpinner = false;
+            reviews: reviews,
+            displaySpinner: false
         });
     }
 
@@ -70,10 +73,12 @@ class EvalsPage extends Component {
         return (
             <Container>
                 {
-                    this.displaySpinner ?
+                    this.state.displaySpinner ?
+                        <div style={{ width: "100%", display: "flex", justifyContent: "center", margin: "25% 0" }}><CircularProgress /></div>
+                        :
                         <div>
                             <Card style={{ margin: "2% 0%" }}>
-                                <CardHeader title={`${this.props.course.courseName} ${this.props.course.courseNumber}`} style={{ backgroundColor: "#303f9f", color: "#fff" }} />
+                                <CardHeader title={`${this.state.courseName}`} style={{ backgroundColor: "#303f9f", color: "#fff" }} />
                             </Card>
 
                             <div style={styles}>
@@ -85,8 +90,6 @@ class EvalsPage extends Component {
                                 </div>
                             </div>
                         </div>
-                        :
-                        <div style={{ width: "100%", display: "flex", justifyContent: "center", margin: "25% 0" }}><CircularProgress /></div>
                 }
             </Container>
         );
@@ -94,3 +97,5 @@ class EvalsPage extends Component {
 }
 
 export default withRouter(EvalsPage);
+
+
