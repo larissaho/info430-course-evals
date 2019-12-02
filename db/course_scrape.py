@@ -63,13 +63,14 @@ def insertEvals(evalData, databaseConnection):
     print("Import completed")
 
 # Pulls out the needed content and appends them into lists
-def scrapeContent(scrape, firstName, lastName, courseName, quarter, year, numSurveyed, numEnrolled,
+def scrapeContent(scrape, firstName, lastName, courseName, courseNumber, quarter, year, numSurveyed, numEnrolled,
     wholeMedian, contentMedian, contributionMedian, effectivenessMedian):
     # Get the section where the HTML content is
     content = scrape.select('body')
 
     # Extract basic course information 
-    courseName.append(content[0].find('h1').text.split()[2] + content[0].find('h1').text.split()[3])
+    courseName.append(content[0].find('h1').text.split()[2])
+    courseNumber.append(content[0].find('h1').text.split()[3])
     courseInfo = content[0].find('h2').text.split()
 
     firstName.append(courseInfo[0])
@@ -100,6 +101,7 @@ if __name__ == '__main__':
     firstName = []
     lastName = []
     courseName = []
+    courseNumber = []
     quarter = []
     year = []
     numSurveyed = []
@@ -109,14 +111,14 @@ if __name__ == '__main__':
     contributionMedian = []
     effectivenessMedian = []
 
-    path = '/Users/larissaho/Desktop/UW/INFO430/info430-course-evals/db/CEC'
+    path = '/Users/larissaho/Desktop/CEC'
 
     for fileName in glob.glob(os.path.join(path, '*.html')):
         print(fileName)
         scrape = getHTML(fileName)
-        scrapeContent(scrape, firstName, lastName, courseName, quarter, year, numSurveyed, numEnrolled, wholeMedian, contentMedian, contributionMedian, effectivenessMedian)
+        scrapeContent(scrape, firstName, lastName, courseName, courseNumber, quarter, year, numSurveyed, numEnrolled, wholeMedian, contentMedian, contributionMedian, effectivenessMedian)
 
-    allValues = list(zip(firstName, lastName, courseName, quarter, year, numSurveyed, numEnrolled, wholeMedian, contentMedian, contributionMedian, effectivenessMedian))
+    allValues = list(zip(firstName, lastName, courseName, courseNumber, quarter, year, numSurveyed, numEnrolled, wholeMedian, contentMedian, contributionMedian, effectivenessMedian))
 
     print(allValues)
 
