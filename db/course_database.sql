@@ -172,6 +172,7 @@ ELSE
     
 GO
 
+--testing
 EXEC insertRatings @firstName = "Autumn", @lastName = "Derr", @courseNumber = 500, @courseName = "INFO", @rating = 4.5,
         @comment = "pls return this review"
 GO
@@ -211,21 +212,22 @@ AS
 RETURN  
 GO  
 
-EXEC return_course_reviews @C_ID = 4
-
-select * from courses
--- Average Professor CEC proEffectivenessScore
-GO
---test
-CREATE PROCEDURE return_course_reviews2
-@C_ID INT
+--gets the CEC proEffectivenessScore and proContributionScore
+CREATE PROCEDURE return_prof_scores
+@profID INT
 
 AS
 
     SET NOCOUNT ON;  
 
-    SELECT TOP 5 C.courseName, C.courseNumber
-    FROM courses AS C
+    SELECT P.firstName, P.lastName, P.profID, E.proEffectivenessScore, E.proContributionScore
+    FROM evaluations AS E 
+        JOIN professors AS P ON E.profID = P.profID
+    WHERE P.profID = @profID
 
 RETURN  
 GO  
+
+select * from professors
+
+
