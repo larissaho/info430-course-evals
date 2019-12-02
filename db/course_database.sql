@@ -1,5 +1,7 @@
 USE Group2_Final
 
+select * from evaluations
+
 -- evaluations table: 
 CREATE TABLE evaluations (
     evalID INT IDENTITY(1,1) PRIMARY KEY,
