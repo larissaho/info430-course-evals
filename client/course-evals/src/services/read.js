@@ -14,6 +14,18 @@ class ReadService {
         let results = await response.json();
         return results;
     }
+
+    async getRatingsForCourse(courseID) {
+        let response = await fetch(`${this.domain}/ratings/?courseID=${courseID}`);
+        let results = await response.json();
+        return results;
+    }
+
+    async getRatingsForProfessor(professorID) {
+        let response = await fetch(`${this.domain}/ratings/?professorID=${professorID}`);
+        let results = await response.json();
+        return results;
+    }
 }
 
 module.exports = ReadService;

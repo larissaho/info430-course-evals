@@ -1,34 +1,61 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import { ListItem, ListItemText, Container, Card, CardHeader, CardContent, CircularProgress } from '@material-ui/core';
+import ReadService from './../services/read';
 
 class ProfessorPage extends Component {
     constructor(props) {
         super(props);
-        // let courseNames = this.props.ratings.map((rating) => { return rating.courseName });
-        // let courseEvals = this.props.ratings.map((rating) => { return rating.courseEvals });
+        this.readService = new ReadService();
+        this.displaySpinner = true;
+
         this.state = {
-            courseNames: [],
+            courses: [],
             courseEvals: [],
             selectedIndex: 0
         }
     }
 
-    courseNames = (courses) => {
-        return courses.map((c, i) => {
-            return (
-                <ListItem key={`prof-${i}`}
-                    selected={this.state.selectedIndex === i}
-                    onClick={() => { this.selectCourse(i) }} >
-                    <ListItemText primary={c} />
-                </ListItem>
-            )
+    async componentDidMount() {
+        let pathname = this.props.location.pathname;
+        let pathComponents = pathname.split("/");
+        let professorID = parseInt(pathComponents[2]);
+        if (!this.readService) {
+            this.readService = new ReadService();
+        }
+        let results = await this.readService.getRatingsForCourse(professorID);
+
+        let courses = results.map((rating) => { return rating.courseName });
+        let courseEvals = results.map((rating) => { return rating.courseEvals });
+
+        this.setState({
+            courses: courses,
+            courseEvals: courseEvals
+        }, () => {
+            this.displaySpinner = false;
         });
     }
 
+    courseNames = (courses) => {
+        if (courses) {
+            return courses.map((c, i) => {
+                return (
+                    <ListItem key={`prof-${i}`}
+                        selected={this.state.selectedIndex === i}
+                        onClick={() => { this.selectCourse(i) }} >
+                        <ListItemText primary={c} />
+                    </ListItem>
+                )
+            });
+        }
+    }
+
     courseEvals = (evals) => {
-        return evals.map((e, i) => {
-            return <div></div>
-        });
+        if (evals) {
+            return evals.map((e, i) => {
+                return <div></div>
+            });
+        }
     }
 
     selectCourse = (index) => {
@@ -46,7 +73,7 @@ class ProfessorPage extends Component {
         return (
             <Container>
                 {
-                    Object.keys(this.props.professor).length > 0 ?
+                   this.displaySpinner ?
                         <div>
                             <Card style={{ margin: "2% 0%" }}>
                                 <CardHeader
@@ -56,15 +83,15 @@ class ProfessorPage extends Component {
 
                             <div style={styles}>
                                 <div style={{ width: "30%" }}>
-                                    {/* {this.courseNames(this.state.courseNames)} */}
+                                    {this.courseNames(this.state.courses)}
                                 </div>
                                 <div>
-                                    {/* {this.courseEvals(this.state.courseEvals[this.state.selectedIndex])} */}
+                                    {this.courseEvals(this.state.courseEvals[this.state.selectedIndex])}
                                 </div>
                             </div>
                         </div>
                         :
-                        <div style={{width: "100%", display: "flex", justifyContent: "center", margin: "25% 0"}}><CircularProgress /></div>
+                        <div style={{ width: "100%", display: "flex", justifyContent: "center", margin: "25% 0" }}><CircularProgress /></div>
                 }
 
             </Container>
@@ -72,4 +99,4 @@ class ProfessorPage extends Component {
     }
 }
 
-export default ProfessorPage;
+export default withRouter(ProfessorPage);

@@ -103,8 +103,6 @@ class App extends Component {
   handleCourseSelection = (c) => {
     this.setState({
       selectedCourse: c
-    }, () => {
-      console.log(c);
     });
   }
 
