@@ -131,6 +131,7 @@ CREATE PROCEDURE insertRatings
     @courseName VARCHAR(30),
     @rating FLOAT,
     @comment VARCHAR(350)
+    
 AS 
 
 BEGIN
@@ -166,7 +167,7 @@ IF @@ERROR <> 0
     ROLLBACK TRAN G1
 ELSE 
     COMMIT TRAN G1
-    RETURN (SELECT * FROM ratings WHERE ratingID = @@IDENTITY)
+    
 GO
 
 EXEC insertRatings @firstName = "Autumn", @lastName = "Derr", @courseNumber = 500, @courseName = "INFO", @rating = 4.5,
@@ -182,7 +183,7 @@ AS
 
     SET NOCOUNT ON;  
 
-    SELECT P.firstName, P.lastName, C.courseNumber, C.courseName, R.rating, R.comment
+    SELECT P.firstName, P.lastName, C.courseNumber, C.courseName,C.courseID, R.rating, R.comment
     FROM ratings AS R 
         JOIN courses AS C ON R.courseID = C.courseID
         JOIN professors AS P ON R.profID = P.profID
@@ -199,7 +200,7 @@ AS
 
     SET NOCOUNT ON;  
 
-    SELECT C.courseName, C.courseNumber, P.firstName, P.lastName, R.rating, R.comment 
+    SELECT C.courseName, C.courseNumber, P.firstName, P.lastName, P.profID, R.rating, R.comment 
     FROM ratings AS R 
         JOIN courses AS C ON R.courseID = C.courseID
         JOIN professors AS P ON R.profID = P.profID
@@ -208,6 +209,21 @@ AS
 RETURN  
 GO  
 
+EXEC return_course_reviews @C_ID = 4
 
+select * from courses
 -- Average Professor CEC proEffectivenessScore
+GO
+--test
+CREATE PROCEDURE return_course_reviews2
+@C_ID INT
 
+AS
+
+    SET NOCOUNT ON;  
+
+    SELECT TOP 5 C.courseName, C.courseNumber
+    FROM courses AS C
+
+RETURN  
+GO  
