@@ -36,6 +36,8 @@ class ReadService {
                     courseID: row.courseID,
                     courseNumber: row.courseNumber,
                     courseName: row.courseName,
+                    firstName: row.firstName,
+                    lastName: row.lastName,
                     reviews: reviews
                 };
             }
@@ -74,7 +76,9 @@ class ReadService {
                     profID: row.profID,
                     firstName: row.firstName,
                     lastName: row.lastName,
-                    reviews: reviews
+                    courseNumber: row.courseNumber,
+                    courseName: row.courseName,
+                    reviews: reviews,
                 };
             }
 
