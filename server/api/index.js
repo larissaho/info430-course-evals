@@ -4,6 +4,7 @@ const mssql = require('mssql');
 const PORT = 4000;
 const config = require('./credentials.json');
 const ReadService = require('./read.js');
+const WriteService = require('./write.js')
 
 class App {
     constructor() {
@@ -19,12 +20,13 @@ class App {
             }
 
             this.readService = new ReadService(mssql);
+            this.writeService = new WriteService(mssql);
         });
     }
 
     startServer() {
-        // enable cross origin requests
-        this.app.use(cors());
+        this.app.use(cors()); // enable cross origin requests
+        this.app.use(express.json()); // request body will be parsed as a json object
 
         // add services
         this.app.get('/', function (req, res) {
@@ -46,11 +48,51 @@ class App {
             res.json(matches);
         });
 
-        // search/courses?courseNumber=INFO 430
+        // search/courses?courseNumber=430&courseName=INFO
         this.app.get('/search/courses', async (req, res) => {
             let courseNumber = req.query.courseNumber;
-            let matches = await this.readService.findCoursesWithNumber(courseNumber);
+            let courseName = req.query.courseName;
+            let matches = await this.readService.findCoursesWithNumber(courseName, courseNumber);
             res.json(matches);
+        });
+
+        // ratings/
+        this.app.post('/ratings', async (req, res) => {
+            let body = req.body;
+            let row = await this.writeService.insertRating(
+                body.firstName,
+                body.lastName,
+                body.courseNumber,
+                body.courseName,
+                body.rating,
+                body.comment
+            );
+
+            res.status(201);
+            res.send("end point works");
+        });
+
+        // ratings/professorID=1&courseID=3
+        this.app.get('/ratings', async (req, res) => {
+            let professorID = req.query.professorID;
+            let courseID = req.query.courseID;
+            let reviews = [];
+
+            if (!professorID && !courseID) {
+                res.status(400);
+                res.send('This endpoint requires at most one of the 2 query parameters: professorID and courseID');
+                return;
+            } else if (professorID && courseID) {
+                res.status(400);
+                res.send('This endpoint requires at most one of the 2 query parameters: professorID and courseID');
+                return;
+            } else if (professorID) {
+                reviews = await this.readService.findRatingsByProfessorID(professorID);
+            } else if (courseID) {
+                reviews = await this.readService.findRatingsByCourseID(courseID);
+            }
+
+            res.send(reviews);
         });
 
         // start server
