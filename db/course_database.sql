@@ -1,5 +1,7 @@
 USE Group2_Final
 
+select * from evaluations
+
 -- evaluations table: 
 CREATE TABLE evaluations (
     evalID INT IDENTITY(1,1) PRIMARY KEY,
@@ -131,6 +133,7 @@ CREATE PROCEDURE insertRatings
     @courseName VARCHAR(30),
     @rating FLOAT,
     @comment VARCHAR(350)
+    
 AS 
 
 BEGIN
@@ -166,9 +169,10 @@ IF @@ERROR <> 0
     ROLLBACK TRAN G1
 ELSE 
     COMMIT TRAN G1
-    RETURN (SELECT * FROM ratings WHERE ratingID = @@IDENTITY)
+    
 GO
 
+--testing
 EXEC insertRatings @firstName = "Autumn", @lastName = "Derr", @courseNumber = 500, @courseName = "INFO", @rating = 4.5,
         @comment = "pls return this review"
 GO
@@ -182,7 +186,7 @@ AS
 
     SET NOCOUNT ON;  
 
-    SELECT P.firstName, P.lastName, C.courseNumber, C.courseName, R.rating, R.comment
+    SELECT P.firstName, P.lastName, C.courseNumber, C.courseName,C.courseID, R.rating, R.comment
     FROM ratings AS R 
         JOIN courses AS C ON R.courseID = C.courseID
         JOIN professors AS P ON R.profID = P.profID
@@ -199,7 +203,7 @@ AS
 
     SET NOCOUNT ON;  
 
-    SELECT C.courseName, C.courseNumber, P.firstName, P.lastName, R.rating, R.comment 
+    SELECT C.courseName, C.courseNumber, P.firstName, P.lastName, P.profID, R.rating, R.comment 
     FROM ratings AS R 
         JOIN courses AS C ON R.courseID = C.courseID
         JOIN professors AS P ON R.profID = P.profID
@@ -208,6 +212,22 @@ AS
 RETURN  
 GO  
 
+--gets the CEC proEffectivenessScore and proContributionScore
+CREATE PROCEDURE return_prof_scores
+@profID INT
 
--- Average Professor CEC proEffectivenessScore
+AS
+
+    SET NOCOUNT ON;  
+
+    SELECT P.firstName, P.lastName, P.profID, E.proEffectivenessScore, E.proContributionScore
+    FROM evaluations AS E 
+        JOIN professors AS P ON E.profID = P.profID
+    WHERE P.profID = @profID
+
+RETURN  
+GO  
+
+select * from professors
+
 

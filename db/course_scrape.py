@@ -41,9 +41,9 @@ def insertEvals(evalData, databaseConnection):
     for i in evalData:
         courseNumber = i[0]
         courseName = i[1]
-        firstName = i[2]
-        lastName = i[3]
-        quarter = i[4]
+        firstName = i[3]
+        lastName = i[4]
+        quarter = i[2]
         year = i[5]
         numSurveyed =i[6]
         numEnrolled = i[7]
