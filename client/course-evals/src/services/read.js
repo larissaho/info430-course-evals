@@ -1,6 +1,6 @@
 class ReadService {
     constructor() {
-        this.domain = `http://localhost:4000`;
+        this.domain = `https://intense-everglades-51660.herokuapp.com`; // `http://localhost:4000`;
     }
 
     async getProfessorsWithFirstAndLastName(firstName, lastName) {

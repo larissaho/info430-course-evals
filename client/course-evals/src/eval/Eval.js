@@ -12,11 +12,12 @@ class Eval extends Component {
                 <CardContent>
                     <div style={style}>
                         <div style={{width: "30%"}}>
-                            <p>Autumn 2018</p>
+                            <p>Rating</p>
+                            <p>{`${this.props.rating} / 5`}</p>
                         </div>
 
                         <p>
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                            {this.props.comment}
                         </p>
                     </div>
                 </CardContent>

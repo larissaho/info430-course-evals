@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { ListItem, ListItemText, Container, Card, CardHeader, CardContent, CircularProgress, Fab } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
+import HomeIcon from '@material-ui/icons/Home';
 import ReadService from './../services/read';
+import Eval from '../eval/Eval';
 
 class ProfessorPage extends Component {
     constructor(props) {
@@ -13,7 +15,8 @@ class ProfessorPage extends Component {
             courses: [],
             reviews: [],
             selectedIndex: 0,
-            displaySpinner: true
+            displaySpinner: true,
+            professorName: ""
         }
     }
 
@@ -26,7 +29,6 @@ class ProfessorPage extends Component {
         }
         let results = await this.readService.getRatingsForProfessor(professorID);
 
-       
         let professorName = results.length > 0 ? `${results[0].firstName} ${results[0].lastName}` : "";
         let courses = results.map((rating) => { return `${rating.courseName} ${rating.courseNumber}` });
         let reviews = results.map((rating) => { return rating.reviews });
@@ -43,7 +45,7 @@ class ProfessorPage extends Component {
         if (courses) {
             return courses.map((c, i) => {
                 return (
-                    <ListItem key={`prof-${i}`}
+                    <ListItem key={`prof-${i}`} style={{ cursor: "pointer" }}
                         selected={this.state.selectedIndex === i}
                         onClick={() => { this.selectCourse(i) }} >
                         <ListItemText primary={c} />
@@ -56,7 +58,9 @@ class ProfessorPage extends Component {
     courseEvals = (evals) => {
         if (evals) {
             return evals.map((e, i) => {
-                return <div></div>
+                return <div key={`eval-${i}`}>
+                    <Eval rating={e.rating} comment={e.comment} />
+                </div>
             });
         }
     }
@@ -82,10 +86,16 @@ class ProfessorPage extends Component {
                         <div style={{ width: "100%", display: "flex", justifyContent: "center", margin: "25% 0" }}><CircularProgress /></div>
                         :
                         <div>
-                            <Card style={{ margin: "2% 0%" }}>
-                                <CardHeader
-                                    title={`${this.props.professor.firstName} ${this.props.professor.lastName}`}
-                                    style={{ backgroundColor: "#303f9f", color: "#fff" }} />
+                            <Card style={{ margin: "2% 0%", backgroundColor: "#eceff1" }}>
+                                <div style={{display: "flex"}}>
+                                    <CardHeader
+                                        title={`${this.state.professorName}`}
+                                        style={{ width: "90%" }} />
+                                    
+                                    <Link to={"/"} style={{ margin: "auto" }} >
+                                        <HomeIcon fontSize={"large"} color={"primary"} />
+                                    </Link>
+                                </div>
                             </Card>
 
                             <div style={styles}>
@@ -97,13 +107,9 @@ class ProfessorPage extends Component {
                                 </div>
                             </div>
 
-                            <Fab color={"secondary"}>
+                            <Fab color={"secondary"} style={{ float: "right", margin: "7% 0" }} >
                                 <AddIcon />
                             </Fab>
-
-                            {/* <Fab color={"primary"} aria-label={"add"}>
-                                
-                            </Fab> */}
                         </div>
                 }
 

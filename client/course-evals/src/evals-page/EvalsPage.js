@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom'
-import { ListItem, ListItemText, Container, Card, CardHeader, CardContent, CircularProgress } from '@material-ui/core';
+import { withRouter, Link } from 'react-router-dom'
+import { ListItem, ListItemText, Container, Card, CardHeader, CardContent, CircularProgress, Fab } from '@material-ui/core';
 import Eval from './../eval/Eval';
+import AddIcon from '@material-ui/icons/Add';
+import HomeIcon from '@material-ui/icons/Home';
 import ReadService from './../services/read';
+import EvalForm from './../new-eval/EvalForm';
 
 class EvalsPage extends Component {
     constructor(props) {
@@ -13,7 +16,8 @@ class EvalsPage extends Component {
             selectedIndex: 0,
             professors: [],
             reviews: [],
-            displaySpinner: true
+            displaySpinner: true,
+            evalForm: false
         }
     }
 
@@ -41,7 +45,7 @@ class EvalsPage extends Component {
     professorNames = (professors) => {
         return professors.map((p, i) => {
             return (
-                <ListItem key={`prof-${i}`}
+                <ListItem key={`prof-${i}`} style={{ cursor: "pointer" }}
                     selected={this.state.selectedIndex === i}
                     onClick={() => { this.selectProfessor(i) }} >
                     <ListItemText primary={p} />
@@ -53,7 +57,7 @@ class EvalsPage extends Component {
     reviews = (reviews) => {
         if (reviews) {
             return reviews.map((r, i) => {
-                return <Eval></Eval>
+                return <Eval key={`review-${i}`} rating={r.rating} comment={r.comment}></Eval>
             });
         }
     }
@@ -62,6 +66,10 @@ class EvalsPage extends Component {
         this.setState({
             selectedIndex: index
         });
+    }
+
+    toggleForm = () => {
+        this.setState({ evalForm: !this.state.evalForm });
     }
 
 
@@ -77,8 +85,14 @@ class EvalsPage extends Component {
                         <div style={{ width: "100%", display: "flex", justifyContent: "center", margin: "25% 0" }}><CircularProgress /></div>
                         :
                         <div>
-                            <Card style={{ margin: "2% 0%" }}>
-                                <CardHeader title={`${this.state.courseName}`} style={{ backgroundColor: "#303f9f", color: "#fff" }} />
+                            <Card style={{ margin: "2% 0%", backgroundColor: "#eceff1" }}>
+                                <div style={{ display: "flex" }}>
+                                    <CardHeader title={`${this.state.courseName}`} 
+                                        style={{ width: "90%" }}/>
+                                    <Link to={"/"} style={{ margin: "auto" }} >
+                                        <HomeIcon fontSize={"large"} color={"primary"} />
+                                    </Link>
+                                </div>
                             </Card>
 
                             <div style={styles}>
@@ -89,7 +103,15 @@ class EvalsPage extends Component {
                                     {this.reviews(this.state.reviews[this.state.selectedIndex])}
                                 </div>
                             </div>
+
+                            <Fab color={"secondary"} 
+                                 style={{ float: "right", margin: "7% 0" }} 
+                                onClick={() => {this.toggleForm() }}>
+                                <AddIcon />
+                            </Fab>
+                            <EvalForm isOpen={this.state.evalForm} toggleForm={this.toggleForm} />
                         </div>
+                        
                 }
             </Container>
         );

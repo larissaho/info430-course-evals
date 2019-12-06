@@ -32,7 +32,9 @@ class App extends Component {
   updateSearchInput = (evt) => {
     evt.preventDefault();
     this.setState({
-      searchTerm: evt.target.value
+      searchTerm: evt.target.value,
+      courses: [],
+      professors: [],
     });
   }
 
@@ -63,7 +65,7 @@ class App extends Component {
   selectSearchField = (evt) => {
     evt.preventDefault();
     this.setState({
-      searchField: evt.target.value
+      searchField: evt.target.value,
     });
   }
 
