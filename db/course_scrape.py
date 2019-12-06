@@ -3,13 +3,7 @@ import requests as r
 from bs4 import BeautifulSoup as bs
 import os 
 import glob
-
-# Connect to our database, and return our database connection
-def connectToDB():
-    print("Connecting to database")
-    mydb = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=is-info430.ischool.uw.edu;DATABASE=Group2_Final;UID=INFO430;PWD=wubalubadubdub')
-    print("Done connecting")
-    return mydb
+from db_connection import * 
 
 # Take in the string of a web address, and retun HTML elements of the page
 def getHTML(domain):
@@ -113,8 +107,6 @@ if __name__ == '__main__':
     courseContentScore = []
     proContributionScore = []
     proEffectivenessScore = []
-
-    path = '/Users/larissaho/Desktop/CEC'
 
     for fileName in glob.glob(os.path.join(path, '*.html')):
         print(fileName)

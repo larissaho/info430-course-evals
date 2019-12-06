@@ -5,6 +5,7 @@ import math
 import pandas as pd
 import re
 import pyodbc
+from db_connection import * 
 
 if __name__ == '__main__':
     schoolId = 1530 # University of Washington
@@ -69,10 +70,7 @@ if __name__ == '__main__':
     ratings = ratings.values.tolist()
     print('Done')
 
-    print("Connecting to database")
-    mydb = pyodbc.connect('DRIVER={ODBC Driver 13 for SQL Server};SERVER=is-info430.ischool.uw.edu;DATABASE=Group2_Final;UID=INFO430;PWD=wubalubadubdub')
-    print("Done connecting")
-    cursor = mydb.cursor()
+    connectToDB()
     
     # insert data into our database
     insertRating = """
